@@ -3,243 +3,393 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>QuizCash – Earn by Answering!</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<title>QuizCash – Earn by Answering</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/lucide@0.263.1/dist/umd/lucide.min.js"></script>
 <style>
-:root{--bg:#0d0f14;--card:#161921;--card2:#1e222d;--gold:#f5c842;--gold2:#ffb700;--green:#2dde98;--red:#ff5c5c;--blue:#5b9cf6;--text:#e8eaf0;--muted:#7a8099;--border:#272b38;--radius:16px;}
+:root{
+  --bg:#0d0f14;--card:#161921;--card2:#1e222d;
+  --gold:#f5c842;--gold2:#e0b030;--green:#2dde98;
+  --red:#ff5c5c;--blue:#5b9cf6;--purple:#b48aff;
+  --text:#e8eaf0;--muted:#6a7a99;--border:#252a38;
+  --radius:14px;--nav-h:64px;
+}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
-h1,h2,h3{font-family:'Syne',sans-serif;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased;}
+h1,h2,h3,h4{font-family:'Syne',sans-serif;}
 
-/* LOADER */
-#loader{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:12px;}
-.spin{width:42px;height:42px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;}
+/* ── LOADER ── */
+#loader{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:14px;}
+.spin{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
-/* Both screens hidden by default - JS controls display */
-#authScreen{display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;min-height:100vh;}
-#appScreen{display:none;flex-direction:column;min-height:100vh;}
+/* ── SCREENS ── */
+#authScreen,#appScreen{display:none;}
+#authScreen{flex-direction:column;align-items:center;justify-content:center;padding:20px;min-height:100vh;}
+#appScreen{flex-direction:column;min-height:100vh;}
 
-/* AUTH */
-.auth-logo{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--gold);letter-spacing:-1px;margin-bottom:4px;}
-.auth-sub{color:var(--muted);font-size:.85rem;margin-bottom:32px;}
-.auth-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px 24px;width:100%;max-width:380px;}
-.tab-row{display:flex;margin-bottom:24px;background:var(--bg);border-radius:10px;padding:4px;}
-.tab-btn{flex:1;padding:10px;border:none;background:transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:.9rem;font-weight:600;border-radius:8px;cursor:pointer;transition:.2s;}
+/* ── AUTH ── */
+.auth-brand{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.auth-brand-icon{width:44px;height:44px;background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:12px;display:flex;align-items:center;justify-content:center;color:#000;}
+.auth-brand-name{font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800;color:var(--gold);}
+.auth-tagline{color:var(--muted);font-size:.85rem;margin-bottom:28px;text-align:center;}
+.auth-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:26px 22px;width:100%;max-width:380px;}
+.tab-row{display:flex;background:var(--bg);border-radius:10px;padding:4px;margin-bottom:22px;}
+.tab-btn{flex:1;padding:10px;border:none;background:transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:.87rem;font-weight:700;border-radius:8px;cursor:pointer;transition:.2s;}
 .tab-btn.active{background:var(--gold);color:#000;}
-label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:6px;font-weight:500;}
-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-size:.95rem;outline:none;transition:.2s;font-family:'DM Sans',sans-serif;}
-input:focus{border-color:var(--gold);}
-.form-group{margin-bottom:16px;}
-.btn{width:100%;padding:14px;border:none;border-radius:10px;font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;transition:.15s;letter-spacing:.3px;}
+.fg{margin-bottom:14px;}
+label{display:block;font-size:.76rem;color:var(--muted);margin-bottom:5px;font-weight:500;letter-spacing:.3px;text-transform:uppercase;}
+input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:11px 13px;color:var(--text);font-size:.93rem;outline:none;transition:.2s;font-family:'DM Sans',sans-serif;}
+input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(245,200,66,.08);}
+.btn{width:100%;padding:13px;border:none;border-radius:9px;font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;cursor:pointer;transition:.15s;letter-spacing:.2px;display:flex;align-items:center;justify-content:center;gap:8px;}
 .btn-gold{background:var(--gold);color:#000;}
 .btn-gold:hover{background:var(--gold2);}
 .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text);margin-top:10px;}
 .btn-outline:hover{border-color:var(--gold);color:var(--gold);}
-.btn-google{background:#fff;color:#1a1a1a;display:flex;align-items:center;justify-content:center;gap:10px;border:1px solid #e0e0e0;font-family:'Syne',sans-serif;font-weight:700;font-size:.92rem;}
-.btn-google:hover{background:#f5f5f5;}
-.divider{display:flex;align-items:center;gap:10px;margin:14px 0;color:var(--muted);font-size:.76rem;}
+.btn-google{background:#fff;color:#1f1f1f;border:1px solid #e0e0e0;font-family:'Syne',sans-serif;font-weight:700;}
+.btn-google:hover{background:#f7f7f7;box-shadow:0 2px 8px rgba(0,0,0,.15);}
+.divider{display:flex;align-items:center;gap:10px;margin:14px 0;color:var(--muted);font-size:.74rem;letter-spacing:.3px;text-transform:uppercase;}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
-.msg-err{color:var(--red);font-size:.82rem;margin-top:10px;text-align:center;min-height:18px;}
-.msg-ok{color:var(--green);font-size:.82rem;margin-top:10px;text-align:center;}
+.msg-err{color:var(--red);font-size:.8rem;margin-top:8px;text-align:center;min-height:18px;line-height:1.4;}
+.msg-ok{color:var(--green);font-size:.8rem;margin-top:8px;text-align:center;}
 
-/* APP SHELL */
-.topbar{background:var(--card);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-.topbar-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:var(--gold);}
-.topbar-user{font-size:.8rem;color:var(--muted);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.logout-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:.8rem;cursor:pointer;font-family:'Syne',sans-serif;font-weight:600;white-space:nowrap;}
-.logout-btn:hover{border-color:var(--red);color:var(--red);}
-.content{flex:1;padding:20px;max-width:480px;width:100%;margin:0 auto;padding-bottom:90px;}
-.bottom-nav{background:var(--card);border-top:1px solid var(--border);display:flex;position:fixed;bottom:0;left:0;right:0;z-index:100;}
-.nav-item{flex:1;padding:12px 4px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;transition:.2s;border:none;background:transparent;color:var(--muted);font-size:.7rem;font-family:'DM Sans',sans-serif;}
+/* ── APP SHELL ── */
+.topbar{background:var(--card);border-bottom:1px solid var(--border);padding:0 16px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;}
+.topbar-brand{display:flex;align-items:center;gap:8px;}
+.topbar-brand-icon{width:30px;height:30px;background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.topbar-brand-name{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:var(--gold);}
+.topbar-right{display:flex;align-items:center;gap:8px;}
+.topbar-user{font-size:.78rem;color:var(--muted);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.icon-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:7px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;}
+.icon-btn:hover{border-color:var(--red);color:var(--red);}
+.content{flex:1;padding:16px;max-width:480px;width:100%;margin:0 auto;padding-bottom:calc(var(--nav-h) + 12px);}
+.bottom-nav{background:var(--card);border-top:1px solid var(--border);display:flex;position:fixed;bottom:0;left:0;right:0;z-index:100;height:var(--nav-h);}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;border:none;background:transparent;color:var(--muted);font-size:.65rem;font-family:'DM Sans',sans-serif;transition:.2s;font-weight:500;position:relative;}
 .nav-item.active{color:var(--gold);}
-.nav-icon{font-size:1.3rem;}
+.nav-item.active::after{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:24px;height:2px;background:var(--gold);border-radius:2px;}
 .page{display:none;}
 .page.active{display:block;}
 
-/* DASHBOARD */
-.balance-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
-.bal-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px 16px;text-align:center;}
-.bal-card.gold-card{border-color:var(--gold);background:linear-gradient(135deg,#1e1a0a,#1e222d);}
-.bal-card.green-card{border-color:var(--green);background:linear-gradient(135deg,#0a1e16,#1e222d);}
-.bal-icon{font-size:1.6rem;margin-bottom:6px;}
-.bal-val{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;}
+/* ── BALANCE CARDS ── */
+.balance-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.bal-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 14px;text-align:center;position:relative;overflow:hidden;}
+.bal-card::after{content:'';position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;opacity:.06;}
+.bal-card.gold-card{border-color:rgba(245,200,66,.3);}
+.bal-card.gold-card::after{background:var(--gold);}
+.bal-card.green-card{border-color:rgba(45,222,152,.3);}
+.bal-card.green-card::after{background:var(--green);}
+.bal-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;}
+.bal-icon.gold{background:rgba(245,200,66,.12);color:var(--gold);}
+.bal-icon.green{background:rgba(45,222,152,.12);color:var(--green);}
+.bal-val{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;line-height:1;}
 .bal-val.gold{color:var(--gold);}
 .bal-val.green{color:var(--green);}
-.bal-label{font-size:.75rem;color:var(--muted);margin-top:2px;}
-.info-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;}
-.info-card p{font-size:.85rem;color:var(--muted);line-height:1.7;}
-.info-card strong{color:var(--gold);}
-.section-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:14px;color:var(--text);}
+.bal-label{font-size:.72rem;color:var(--muted);margin-top:5px;}
 
-/* QUIZ */
-.quiz-header{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
-.quiz-progress{font-size:.8rem;color:var(--muted);}
-.progress-bar{height:4px;background:var(--border);border-radius:4px;margin-top:8px;overflow:hidden;}
-.progress-fill{height:100%;background:var(--gold);border-radius:4px;transition:.3s;}
-.question-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px;}
-.question-num{font-size:.75rem;color:var(--gold);font-weight:700;margin-bottom:8px;letter-spacing:1px;text-transform:uppercase;}
-.question-text{font-family:'Syne',sans-serif;font-size:1rem;font-weight:600;line-height:1.5;margin-bottom:20px;}
-.options-list{display:flex;flex-direction:column;gap:10px;}
-.opt-btn{width:100%;padding:14px 16px;background:var(--card2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:.9rem;text-align:left;cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif;}
-.opt-btn:hover:not([disabled]){border-color:var(--gold);color:var(--gold);}
-.opt-btn.correct{background:#0a2e1e;border-color:var(--green);color:var(--green);}
-.opt-btn.wrong{background:#2e0a0a;border-color:var(--red);color:var(--red);}
-.result-box{border-radius:12px;padding:14px 16px;margin-bottom:12px;text-align:center;font-size:.9rem;border:1px solid;}
-.result-box.ok{border-color:var(--green);color:var(--green);background:#0a2e1e33;}
-.result-box.bad{border-color:var(--red);color:var(--red);background:#2e0a0a33;}
-.next-btn{width:100%;padding:14px;background:var(--gold);border:none;border-radius:10px;color:#000;font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;}
-.quiz-complete{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:32px 20px;text-align:center;}
-.earned-tag{display:inline-block;background:linear-gradient(135deg,#1e1a0a,#2a2000);border:1px solid var(--gold);border-radius:20px;padding:8px 20px;color:var(--gold);font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;margin:12px 0 20px;}
+/* ── CARDS ── */
+.info-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px;}
+.info-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:.84rem;}
+.info-row:last-child{border-bottom:none;padding-bottom:0;}
+.info-row:first-child{padding-top:0;}
+.ir-label{color:var(--muted);display:flex;align-items:center;gap:7px;}
+.ir-val{font-weight:600;font-family:'Syne',sans-serif;}
+.section-title{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;margin-bottom:12px;color:var(--text);display:flex;align-items:center;gap:8px;}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:.74rem;font-weight:600;font-family:'Syne',sans-serif;}
+.chip-gold{background:rgba(245,200,66,.1);color:var(--gold);border:1px solid rgba(245,200,66,.2);}
+.chip-green{background:rgba(45,222,152,.1);color:var(--green);border:1px solid rgba(45,222,152,.2);}
+.chip-blue{background:rgba(91,156,246,.1);color:var(--blue);border:1px solid rgba(91,156,246,.2);}
+.chip-red{background:rgba(255,92,92,.1);color:var(--red);border:1px solid rgba(255,92,92,.2);}
 
-/* WITHDRAW */
-.withdraw-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px;}
-.conv-info{background:var(--bg);border-radius:10px;padding:12px;margin-bottom:16px;font-size:.82rem;color:var(--muted);line-height:1.9;}
-.conv-info span{color:var(--gold);font-weight:600;}
-.req-item{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;}
-.status-badge{font-size:.72rem;padding:3px 10px;border-radius:20px;font-weight:600;}
-.badge-pending{background:#2a1e00;color:var(--gold);border:1px solid var(--gold);}
-.badge-done{background:#0a2e1e;color:var(--green);border:1px solid var(--green);}
-.empty-state{text-align:center;color:var(--muted);font-size:.85rem;padding:32px 0;}
-@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-.fade-up{animation:fadeUp .3s ease forwards;}
+/* ── QUIZ ── */
+.quiz-header{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;}
+.progress-bar{height:4px;background:var(--border);border-radius:4px;margin-top:7px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--gold);border-radius:4px;transition:.4s;}
+.question-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:14px;}
+.q-num{font-size:.71rem;color:var(--gold);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;}
+.q-text{font-family:'Syne',sans-serif;font-size:1.02rem;font-weight:600;line-height:1.55;margin-bottom:18px;}
+.opts{display:flex;flex-direction:column;gap:9px;}
+.opt-btn{width:100%;padding:13px 14px;background:var(--card2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:.88rem;text-align:left;cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:10px;}
+.opt-btn:hover:not([disabled]){border-color:var(--gold);color:var(--gold);background:rgba(245,200,66,.05);}
+.opt-btn.correct{background:rgba(45,222,152,.08);border-color:var(--green);color:var(--green);}
+.opt-btn.wrong{background:rgba(255,92,92,.08);border-color:var(--red);color:var(--red);}
+.opt-letter{width:26px;height:26px;border-radius:7px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;font-family:'Syne',sans-serif;flex-shrink:0;}
+.result-box{border-radius:10px;padding:13px 16px;margin-bottom:12px;font-size:.88rem;border:1px solid;display:flex;align-items:flex-start;gap:10px;}
+.result-box.ok{border-color:var(--green);color:var(--green);background:rgba(45,222,152,.06);}
+.result-box.bad{border-color:var(--red);color:var(--red);background:rgba(255,92,92,.06);}
+.next-btn{width:100%;padding:13px;background:var(--gold);border:none;border-radius:9px;color:#000;font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+.quiz-complete{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:30px 20px;text-align:center;}
+.complete-icon{width:64px;height:64px;background:rgba(245,200,66,.1);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:var(--gold);}
+.earned-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.2);border-radius:24px;padding:10px 22px;color:var(--gold);font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;margin:14px 0 20px;}
+.limit-banner{background:rgba(255,92,92,.07);border:1px solid rgba(255,92,92,.2);border-radius:10px;padding:14px 16px;text-align:center;color:var(--red);font-size:.86rem;}
+
+/* ── LEADERBOARD ── */
+.lb-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:9px;display:flex;align-items:center;gap:12px;}
+.lb-rank{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:.9rem;flex-shrink:0;}
+.lb-rank.r1{background:rgba(245,200,66,.15);color:var(--gold);}
+.lb-rank.r2{background:rgba(180,138,255,.1);color:var(--purple);}
+.lb-rank.r3{background:rgba(91,156,246,.1);color:var(--blue);}
+.lb-rank.rn{background:var(--card2);color:var(--muted);}
+.lb-info{flex:1;}
+.lb-name{font-weight:600;font-size:.88rem;}
+.lb-sub{font-size:.74rem;color:var(--muted);margin-top:2px;}
+.lb-coins{font-family:'Syne',sans-serif;font-weight:700;color:var(--gold);font-size:.9rem;}
+.lb-me{border-color:rgba(245,200,66,.3);background:rgba(245,200,66,.03);}
+
+/* ── PROFILE ── */
+.profile-header{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center;margin-bottom:14px;}
+.avatar{width:64px;height:64px;background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:#000;}
+.profile-name{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:4px;}
+.profile-email{font-size:.8rem;color:var(--muted);}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px;}
+.stat-mini{text-align:center;}
+.stat-mini-val{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;}
+.stat-mini-label{font-size:.69rem;color:var(--muted);margin-top:3px;}
+.divider-v{width:1px;background:var(--border);}
+
+/* ── WITHDRAW ── */
+.wd-info-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:14px;}
+.wd-stat{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:.84rem;}
+.wd-stat:last-child{border-bottom:none;padding-bottom:0;}
+.wd-stat:first-child{padding-top:0;}
+.req-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;}
+.status-chip{font-size:.7rem;padding:3px 10px;border-radius:20px;font-weight:700;font-family:'Syne',sans-serif;}
+.s-pending{background:#2a1e00;color:var(--gold);border:1px solid rgba(245,200,66,.3);}
+.s-done{background:#0a2e1e;color:var(--green);border:1px solid rgba(45,222,152,.3);}
+.s-rejected{background:#2e0a0a;color:var(--red);border:1px solid rgba(255,92,92,.3);}
+
+/* ── ANNOUNCEMENT BANNER ── */
+.announce-banner{background:linear-gradient(135deg,rgba(91,156,246,.12),rgba(180,138,255,.08));border:1px solid rgba(91,156,246,.2);border-radius:12px;padding:13px 15px;margin-bottom:14px;display:flex;gap:10px;align-items:flex-start;}
+.announce-banner p{font-size:.84rem;color:var(--text);line-height:1.5;}
+
+/* ── EMPTY ── */
+.empty-state{text-align:center;padding:32px 20px;color:var(--muted);}
+.empty-icon{width:48px;height:48px;background:var(--card2);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;color:var(--muted);}
+.empty-state p{font-size:.84rem;margin-top:4px;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.fade-up{animation:fadeUp .25s ease forwards;}
 </style>
 </head>
 <body>
 
 <div id="loader">
   <div class="spin"></div>
-  <span style="color:var(--muted);font-size:.85rem;font-family:'Syne',sans-serif;margin-top:4px;">Loading...</span>
+  <span style="color:var(--muted);font-size:.82rem;font-family:'Syne',sans-serif;">QuizCash</span>
 </div>
 
-<!-- AUTH SCREEN -->
+<!-- ═══ AUTH SCREEN ═══ -->
 <div id="authScreen">
-  <div class="auth-logo">🪙 QuizCash</div>
-  <div class="auth-sub">Play quizzes and earn real money!</div>
+  <div class="auth-brand">
+    <div class="auth-brand-icon"><i data-lucide="zap" style="width:22px;height:22px;"></i></div>
+    <div class="auth-brand-name">QuizCash</div>
+  </div>
+  <div class="auth-tagline">Answer quizzes. Earn real money.</div>
+
   <div class="auth-card fade-up">
     <div class="tab-row">
       <button class="tab-btn active" id="tabLogin"  onclick="switchTab('login')">Login</button>
       <button class="tab-btn"        id="tabSignup" onclick="switchTab('signup')">Sign Up</button>
     </div>
 
-    <!-- LOGIN FORM -->
+    <!-- LOGIN -->
     <div id="loginSection">
-      <button class="btn btn-google" onclick="googleSignIn()">
-        <svg width="20" height="20" viewBox="0 0 48 48" style="flex-shrink:0"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+      <button class="btn btn-google" onclick="googleAuth()">
+        <svg width="18" height="18" viewBox="0 0 48 48" style="flex-shrink:0"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
         Continue with Google
       </button>
-      <div class="divider">or login with email</div>
-      <div class="form-group">
-        <label>Email Address</label>
-        <input type="email" id="loginEmail" placeholder="your@email.com"/>
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="loginPass" placeholder="Your password"/>
-      </div>
-      <button class="btn btn-gold" onclick="emailLogin()">Login</button>
+      <div class="divider">or</div>
+      <div class="fg"><label>Email Address</label><input type="email" id="loginEmail" placeholder="you@example.com"/></div>
+      <div class="fg"><label>Password</label><input type="password" id="loginPass" placeholder="Your password"/></div>
+      <button class="btn btn-gold" onclick="emailLogin()">
+        <i data-lucide="log-in" style="width:16px;height:16px;"></i> Login
+      </button>
       <div id="loginErr" class="msg-err"></div>
     </div>
 
-    <!-- SIGNUP FORM -->
+    <!-- SIGNUP -->
     <div id="signupSection" style="display:none;">
-      <button class="btn btn-google" onclick="googleSignIn()">
-        <svg width="20" height="20" viewBox="0 0 48 48" style="flex-shrink:0"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+      <button class="btn btn-google" onclick="googleAuth()">
+        <svg width="18" height="18" viewBox="0 0 48 48" style="flex-shrink:0"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
         Sign up with Google
       </button>
-      <div class="divider">or sign up with email</div>
-      <div class="form-group">
-        <label>Your Name</label>
-        <input type="text" id="signupName" placeholder="Full name"/>
-      </div>
-      <div class="form-group">
-        <label>Email Address</label>
-        <input type="email" id="signupEmail" placeholder="your@email.com"/>
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="signupPass" placeholder="Minimum 6 characters"/>
-      </div>
-      <button class="btn btn-gold" onclick="emailSignup()">Create Account</button>
+      <div class="divider">or</div>
+      <div class="fg"><label>Your Name</label><input type="text" id="signupName" placeholder="Full name"/></div>
+      <div class="fg"><label>Email Address</label><input type="email" id="signupEmail" placeholder="you@example.com"/></div>
+      <div class="fg"><label>Password</label><input type="password" id="signupPass" placeholder="Minimum 6 characters"/></div>
+      <button class="btn btn-gold" onclick="emailSignup()">
+        <i data-lucide="user-plus" style="width:16px;height:16px;"></i> Create Account
+      </button>
       <div id="signupErr" class="msg-err"></div>
     </div>
   </div>
 </div>
 
-<!-- APP SCREEN -->
+<!-- ═══ APP SCREEN ═══ -->
 <div id="appScreen">
   <div class="topbar">
-    <div class="topbar-logo">🪙 QuizCash</div>
-    <div style="display:flex;align-items:center;gap:10px;">
+    <div class="topbar-brand">
+      <div class="topbar-brand-icon"><i data-lucide="zap" style="width:16px;height:16px;color:#000;"></i></div>
+      <div class="topbar-brand-name">QuizCash</div>
+    </div>
+    <div class="topbar-right">
       <span class="topbar-user" id="topbarName"></span>
-      <button class="logout-btn" onclick="doLogout()">Logout</button>
+      <button class="icon-btn" onclick="doLogout()" title="Logout"><i data-lucide="log-out" style="width:16px;height:16px;"></i></button>
+    </div>
+  </div>
+
+  <!-- ANNOUNCEMENT BANNER -->
+  <div id="announceBanner" style="display:none;padding:10px 16px 0;max-width:480px;width:100%;margin:0 auto;">
+    <div class="announce-banner">
+      <i data-lucide="megaphone" style="width:18px;height:18px;color:var(--blue);flex-shrink:0;margin-top:1px;"></i>
+      <p id="announceText"></p>
     </div>
   </div>
 
   <div class="content">
+
+    <!-- ── DASHBOARD ── -->
     <div class="page active" id="pageDashboard">
-      <div class="section-title">👋 Welcome back!</div>
+      <div class="section-title"><i data-lucide="layout-dashboard" style="width:16px;height:16px;color:var(--gold);"></i> Dashboard</div>
       <div class="balance-grid">
         <div class="bal-card gold-card">
-          <div class="bal-icon">🪙</div>
+          <div class="bal-icon gold"><i data-lucide="coins" style="width:18px;height:18px;"></i></div>
           <div class="bal-val gold" id="dashCoins">0</div>
-          <div class="bal-label">Coins</div>
+          <div class="bal-label">Total Coins</div>
         </div>
         <div class="bal-card green-card">
-          <div class="bal-icon">💰</div>
+          <div class="bal-icon green"><i data-lucide="indian-rupee" style="width:18px;height:18px;"></i></div>
           <div class="bal-val green" id="dashRupees">₹0.00</div>
-          <div class="bal-label">Rupees</div>
+          <div class="bal-label">Rupee Value</div>
         </div>
       </div>
+
       <div class="info-card">
-        <p>🎯 <strong>50 Coins = ₹1</strong></p>
-        <p style="margin-top:6px;">Answer quiz questions correctly to earn coins! Minimum <strong>500 coins (₹10)</strong> to withdraw.</p>
+        <div class="info-row">
+          <span class="ir-label"><i data-lucide="trending-up" style="width:14px;height:14px;"></i> Quizzes Played</span>
+          <span class="ir-val" id="dashPlayed" style="color:var(--blue);">0</span>
+        </div>
+        <div class="info-row">
+          <span class="ir-label"><i data-lucide="check-circle" style="width:14px;height:14px;"></i> Correct Answers</span>
+          <span class="ir-val" id="dashCorrect" style="color:var(--green);">0</span>
+        </div>
+        <div class="info-row">
+          <span class="ir-label"><i data-lucide="calendar" style="width:14px;height:14px;"></i> Today's Quizzes</span>
+          <span class="ir-val" id="dashTodayCount" style="color:var(--gold);">0 / <span id="dashDailyLimit">5</span></span>
+        </div>
+        <div class="info-row">
+          <span class="ir-label"><i data-lucide="info" style="width:14px;height:14px;"></i> Conversion Rate</span>
+          <span class="chip chip-gold" id="dashRate">50 Coins = ₹1</span>
+        </div>
       </div>
-      <div class="info-card">
-        <p>📊 <strong>Quizzes Played:</strong> <span id="dashPlayed" style="color:var(--blue);">0</span></p>
-        <p style="margin-top:6px;">✅ <strong>Correct Answers:</strong> <span id="dashCorrect" style="color:var(--green);">0</span></p>
-      </div>
-      <button class="btn btn-gold" style="margin-top:8px;" onclick="navTo('quiz')">🚀 Start Quiz</button>
+
+      <button class="btn btn-gold" onclick="navTo('quiz')">
+        <i data-lucide="play" style="width:16px;height:16px;"></i> Start Quiz
+      </button>
     </div>
 
+    <!-- ── QUIZ ── -->
     <div class="page" id="pageQuiz">
       <div id="quizArea"></div>
     </div>
 
+    <!-- ── LEADERBOARD ── -->
+    <div class="page" id="pageLeaderboard">
+      <div class="section-title"><i data-lucide="trophy" style="width:16px;height:16px;color:var(--gold);"></i> Leaderboard</div>
+      <div id="lbList"><div class="empty-state"><div class="empty-icon"><i data-lucide="loader" style="width:20px;height:20px;"></i></div><p>Loading...</p></div></div>
+    </div>
+
+    <!-- ── WITHDRAW ── -->
     <div class="page" id="pageWithdraw">
-      <div class="withdraw-card">
-        <h3 style="margin-bottom:16px;font-size:1rem;font-family:'Syne',sans-serif;">💸 Withdraw Request</h3>
-        <div class="conv-info">
-          Your Balance: <span id="wdCoins">0</span> Coins = <span id="wdRupees">₹0.00</span><br/>
-          Rate: <span>50 Coins = ₹1</span><br/>
-          Minimum Withdrawal: <span>500 Coins (₹10)</span>
+      <div class="section-title"><i data-lucide="wallet" style="width:16px;height:16px;color:var(--green);"></i> Withdraw</div>
+      <div class="wd-info-card">
+        <div class="wd-stat">
+          <span style="color:var(--muted);font-size:.82rem;">Available Coins</span>
+          <span style="font-family:'Syne',sans-serif;font-weight:700;color:var(--gold);" id="wdCoins">0</span>
         </div>
-        <div class="form-group">
-          <label>Your UPI ID</label>
-          <input type="text" id="upiInput" placeholder="yourname@upi"/>
+        <div class="wd-stat">
+          <span style="color:var(--muted);font-size:.82rem;">Rupee Value</span>
+          <span style="font-family:'Syne',sans-serif;font-weight:700;color:var(--green);" id="wdRupees">₹0.00</span>
         </div>
-        <div class="form-group">
-          <label>Coins to Withdraw (multiples of 50)</label>
-          <input type="number" id="coinsInput" placeholder="e.g. 500" min="500" step="50"/>
+        <div class="wd-stat">
+          <span style="color:var(--muted);font-size:.82rem;">Minimum Withdrawal</span>
+          <span class="chip chip-gold" id="wdMinChip">500 Coins</span>
         </div>
-        <button class="btn btn-gold" onclick="sendWithdraw()">Send Request</button>
+      </div>
+      <div class="info-card" style="margin-bottom:14px;">
+        <div class="fg"><label>Your UPI ID</label><input type="text" id="upiInput" placeholder="yourname@upi"/></div>
+        <div class="fg" style="margin-bottom:0;"><label>Coins to Withdraw</label><input type="number" id="coinsInput" placeholder="Enter coins (multiples of 50)" min="500" step="50"/></div>
+        <div style="margin-top:14px;">
+          <button class="btn btn-gold" onclick="sendWithdraw()">
+            <i data-lucide="send" style="width:16px;height:16px;"></i> Send Request
+          </button>
+        </div>
         <div id="wdOk" class="msg-ok"></div>
         <div id="wdErr" class="msg-err"></div>
       </div>
-      <div class="section-title">📋 My Requests</div>
-      <div id="myRequests"><div class="empty-state">No requests yet.</div></div>
+      <div class="section-title"><i data-lucide="clock" style="width:15px;height:15px;color:var(--muted);"></i> Request History</div>
+      <div id="myRequests"><div class="empty-state"><div class="empty-icon"><i data-lucide="inbox" style="width:20px;height:20px;"></i></div><p>No requests yet.</p></div></div>
     </div>
-  </div>
+
+    <!-- ── PROFILE ── -->
+    <div class="page" id="pageProfile">
+      <div class="section-title"><i data-lucide="user" style="width:16px;height:16px;color:var(--purple);"></i> Profile</div>
+      <div class="profile-header">
+        <div class="avatar" id="avatarInitial">?</div>
+        <div class="profile-name" id="profileName">—</div>
+        <div class="profile-email" id="profileEmail">—</div>
+        <div class="stats-row">
+          <div class="stat-mini">
+            <div class="stat-mini-val" id="pCoins" style="color:var(--gold);">0</div>
+            <div class="stat-mini-label">Coins</div>
+          </div>
+          <div class="divider-v"></div>
+          <div class="stat-mini">
+            <div class="stat-mini-val" id="pPlayed" style="color:var(--blue);">0</div>
+            <div class="stat-mini-label">Quizzes</div>
+          </div>
+          <div class="divider-v"></div>
+          <div class="stat-mini">
+            <div class="stat-mini-val" id="pCorrect" style="color:var(--green);">0</div>
+            <div class="stat-mini-label">Correct</div>
+          </div>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-row">
+          <span class="ir-label"><i data-lucide="calendar-check" style="width:14px;height:14px;"></i> Member Since</span>
+          <span class="ir-val" id="pJoined" style="font-size:.82rem;font-family:'DM Sans',sans-serif;">—</span>
+        </div>
+        <div class="info-row">
+          <span class="ir-label"><i data-lucide="log-in" style="width:14px;height:14px;"></i> Login Method</span>
+          <span id="pProvider" class="chip chip-blue">—</span>
+        </div>
+        <div class="info-row">
+          <span class="ir-label"><i data-lucide="indian-rupee" style="width:14px;height:14px;"></i> Total Earned</span>
+          <span class="ir-val" id="pRupees" style="color:var(--green);">₹0.00</span>
+        </div>
+      </div>
+      <button class="btn btn-outline" onclick="doLogout()">
+        <i data-lucide="log-out" style="width:16px;height:16px;"></i> Logout
+      </button>
+    </div>
+
+  </div><!-- /content -->
 
   <div class="bottom-nav">
     <button class="nav-item active" id="nav-dashboard" onclick="navTo('dashboard')">
-      <span class="nav-icon">🏠</span><span>Home</span>
+      <i data-lucide="layout-dashboard" style="width:20px;height:20px;"></i><span>Home</span>
     </button>
     <button class="nav-item" id="nav-quiz" onclick="navTo('quiz')">
-      <span class="nav-icon">🧠</span><span>Quiz</span>
+      <i data-lucide="brain" style="width:20px;height:20px;"></i><span>Quiz</span>
+    </button>
+    <button class="nav-item" id="nav-leaderboard" onclick="navTo('leaderboard')">
+      <i data-lucide="trophy" style="width:20px;height:20px;"></i><span>Top</span>
     </button>
     <button class="nav-item" id="nav-withdraw" onclick="navTo('withdraw')">
-      <span class="nav-icon">💸</span><span>Withdraw</span>
+      <i data-lucide="wallet" style="width:20px;height:20px;"></i><span>Withdraw</span>
+    </button>
+    <button class="nav-item" id="nav-profile" onclick="navTo('profile')">
+      <i data-lucide="user" style="width:20px;height:20px;"></i><span>Profile</span>
     </button>
   </div>
 </div>
@@ -248,365 +398,451 @@ input:focus{border-color:var(--gold);}
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
-/* ═══════════════════════════════════════════════
-   FIREBASE INIT
-═══════════════════════════════════════════════ */
+/* ── FIREBASE ── */
 firebase.initializeApp({
-  apiKey:            "AIzaSyBnz1UbLyz0f6t83D2222XlmKNhKLdFzQM",
-  authDomain:        "digit-product.firebaseapp.com",
-  databaseURL:       "https://digit-product-default-rtdb.firebaseio.com",
-  projectId:         "digit-product",
-  storageBucket:     "digit-product.firebasestorage.app",
-  messagingSenderId: "866989324771",
-  appId:             "1:866989324771:web:922bcc61814ab6cd6d88d6"
+  apiKey:"AIzaSyBnz1UbLyz0f6t83D2222XlmKNhKLdFzQM",
+  authDomain:"digit-product.firebaseapp.com",
+  databaseURL:"https://digit-product-default-rtdb.firebaseio.com",
+  projectId:"digit-product",
+  storageBucket:"digit-product.firebasestorage.app",
+  messagingSenderId:"866989324771",
+  appId:"1:866989324771:web:922bcc61814ab6cd6d88d6"
 });
 const auth = firebase.auth();
 const db   = firebase.database();
 
-/* ═══════════════════════════════════════════════
-   GLOBALS
-═══════════════════════════════════════════════ */
-let currentUID = null;
-let userData   = null;
-let userRef    = null;
-let quizState  = {};
+/* ── GLOBALS ── */
+var uid       = null;
+var userData  = null;
+var userRef   = null;
+var siteSettings = { minWithdraw:500, dailyLimit:5, coinRate:50, announcement:'' };
+var quizState = {};
 
-/* ═══════════════════════════════════════════════
-   UTILITY
-═══════════════════════════════════════════════ */
-const get = id => document.getElementById(id);
+/* ── HELPERS ── */
+var g = function(id){ return document.getElementById(id); };
+var icons = function(){ if(window.lucide) lucide.createIcons(); };
 
-function showScreen(which) {
-  get('authScreen').style.display = 'none';
-  get('appScreen').style.display  = 'none';
-  if (which === 'auth') get('authScreen').style.display = 'flex';
-  if (which === 'app')  get('appScreen').style.display  = 'flex';
+function showScreen(s){
+  g('authScreen').style.display='none';
+  g('appScreen').style.display='none';
+  if(s==='auth') g('authScreen').style.display='flex';
+  if(s==='app')  g('appScreen').style.display='flex';
+  icons();
 }
 
-const ERR = {
-  'auth/user-not-found'        : 'No account found with this email.',
-  'auth/wrong-password'        : 'Wrong password.',
-  'auth/invalid-credential'    : 'Invalid email or password.',
-  'auth/email-already-in-use'  : 'This email is already registered.',
-  'auth/weak-password'         : 'Password must be at least 6 characters.',
-  'auth/invalid-email'         : 'Please enter a valid email address.',
-  'auth/too-many-requests'     : 'Too many attempts. Try again later.',
-  'auth/popup-closed-by-user'  : 'Google sign-in was cancelled.',
-  'auth/popup-blocked'         : 'Popup blocked! Please allow popups for this site.',
-  'auth/network-request-failed': 'Network error. Check your internet connection.'
+var ERRS = {
+  'auth/user-not-found'        :'No account found with this email.',
+  'auth/wrong-password'        :'Wrong password. Try again.',
+  'auth/invalid-credential'    :'Incorrect email or password.',
+  'auth/email-already-in-use'  :'This email is already registered.',
+  'auth/weak-password'         :'Password must be at least 6 characters.',
+  'auth/invalid-email'         :'Please enter a valid email.',
+  'auth/too-many-requests'     :'Too many attempts. Please wait and try again.',
+  'auth/popup-closed-by-user'  :'Sign-in cancelled.',
+  'auth/popup-blocked'         :'Popup was blocked. Trying redirect method...',
+  'auth/cancelled-popup-request':'Sign-in cancelled.',
+  'auth/network-request-failed':'Network error. Check your connection.'
 };
-function errMsg(code) { return ERR[code] || 'Something went wrong. Please try again.'; }
+function fe(code){ return ERRS[code]||'An error occurred. Please try again.'; }
 
-/* ═══════════════════════════════════════════════
-   AUTH STATE — SINGLE SOURCE OF TRUTH
-═══════════════════════════════════════════════ */
-auth.onAuthStateChanged(async function(user) {
-  get('loader').style.display = 'none';
+/* ── REDIRECT RESULT HANDLER (for Google redirect fallback) ── */
+auth.getRedirectResult().then(function(result){
+  if(result && result.user){
+    // Handled by onAuthStateChanged
+  }
+}).catch(function(e){
+  console.warn('Redirect result error:', e.code);
+});
 
-  if (user) {
-    currentUID = user.uid;
-    userRef    = db.ref('quizcash_users/' + user.uid);
-
-    // Create profile if first time
-    const snap = await userRef.once('value');
-    if (!snap.exists()) {
-      await userRef.set({
-        name:           user.displayName || user.email.split('@')[0],
-        email:          user.email || '',
-        coins:          0,
-        quizzesPlayed:  0,
-        correctAnswers: 0,
-        createdAt:      Date.now(),
-        provider:       (user.providerData[0] && user.providerData[0].providerId) || 'email'
-      });
-    }
-
-    // Real-time listener
-    userRef.on('value', function(s) {
-      userData = s.val() || {};
-      refreshDashboard();
-      refreshWithdrawInfo();
+/* ── AUTH STATE ── */
+auth.onAuthStateChanged(function(user){
+  g('loader').style.display='none';
+  if(user){
+    uid     = user.uid;
+    userRef = db.ref('quizcash_users/'+user.uid);
+    userRef.once('value').then(function(snap){
+      if(!snap.exists()){
+        return userRef.set({
+          name:           user.displayName || user.email.split('@')[0],
+          email:          user.email||'',
+          coins:          0,
+          quizzesPlayed:  0,
+          correctAnswers: 0,
+          createdAt:      Date.now(),
+          provider:       (user.providerData[0]&&user.providerData[0].providerId)||'email',
+          dailyQuizDate:  '',
+          dailyQuizCount: 0
+        });
+      }
+    }).then(function(){
+      userRef.on('value',function(s){ userData=s.val()||{}; refreshAll(); });
+      loadSiteSettings();
+      g('topbarName').textContent = user.displayName||user.email;
+      showScreen('app');
+      navTo('dashboard');
     });
-
-    get('topbarName').textContent = user.displayName || user.email;
-    showScreen('app');
-    navTo('dashboard');
-
   } else {
-    if (userRef) { userRef.off(); userRef = null; }
-    currentUID = null;
-    userData   = null;
+    if(userRef){ userRef.off(); userRef=null; }
+    uid=null; userData=null;
     showScreen('auth');
   }
 });
 
-/* ═══════════════════════════════════════════════
-   AUTH — TAB SWITCH
-═══════════════════════════════════════════════ */
-function switchTab(tab) {
-  var isLogin = (tab === 'login');
-  get('tabLogin').classList.toggle('active', isLogin);
-  get('tabSignup').classList.toggle('active', !isLogin);
-  get('loginSection').style.display  = isLogin ? 'block' : 'none';
-  get('signupSection').style.display = isLogin ? 'none'  : 'block';
-  get('loginErr').textContent  = '';
-  get('signupErr').textContent = '';
+/* ── LOAD SITE SETTINGS ── */
+function loadSiteSettings(){
+  db.ref('quizcash_settings').on('value',function(s){
+    var d = s.val()||{};
+    siteSettings.minWithdraw = d.minWithdraw||500;
+    siteSettings.dailyLimit  = d.dailyLimit||5;
+    siteSettings.coinRate    = d.coinRate||50;
+    siteSettings.announcement= d.announcement||'';
+    applySettings();
+  });
 }
 
-/* ═══════════════════════════════════════════════
-   AUTH — EMAIL LOGIN
-═══════════════════════════════════════════════ */
-function emailLogin() {
-  get('loginErr').textContent = '';
-  var email = get('loginEmail').value.trim();
-  var pass  = get('loginPass').value;
-  if (!email || !pass) { get('loginErr').textContent = 'Please fill in all fields.'; return; }
-  auth.signInWithEmailAndPassword(email, pass)
-    .catch(function(e) { get('loginErr').textContent = errMsg(e.code); });
+function applySettings(){
+  // Announcement banner
+  var banner = g('announceBanner');
+  if(siteSettings.announcement){
+    g('announceText').textContent = siteSettings.announcement;
+    banner.style.display='block';
+  } else {
+    banner.style.display='none';
+  }
+  // Update UI elements
+  var rateEl = g('dashRate');
+  if(rateEl) rateEl.textContent = siteSettings.coinRate+' Coins = ₹1';
+  var limEl = g('dashDailyLimit');
+  if(limEl) limEl.textContent = siteSettings.dailyLimit;
+  var minEl = g('wdMinChip');
+  if(minEl) minEl.textContent = siteSettings.minWithdraw+' Coins';
+  icons();
 }
 
-/* ═══════════════════════════════════════════════
-   AUTH — EMAIL SIGNUP
-═══════════════════════════════════════════════ */
-function emailSignup() {
-  get('signupErr').textContent = '';
-  var name  = get('signupName').value.trim();
-  var email = get('signupEmail').value.trim();
-  var pass  = get('signupPass').value;
-  if (!name || !email || !pass) { get('signupErr').textContent = 'Please fill in all fields.'; return; }
-  if (pass.length < 6)          { get('signupErr').textContent = 'Password must be at least 6 characters.'; return; }
-  auth.createUserWithEmailAndPassword(email, pass)
-    .then(function(cred) { return cred.user.updateProfile({ displayName: name }); })
-    .catch(function(e)   { get('signupErr').textContent = errMsg(e.code); });
+/* ── REFRESH ALL ── */
+function refreshAll(){
+  if(!userData) return;
+  refreshDashboard();
+  refreshWithdrawInfo();
+  refreshProfile();
 }
 
-/* ═══════════════════════════════════════════════
-   AUTH — GOOGLE SIGN IN
-═══════════════════════════════════════════════ */
-function googleSignIn() {
-  get('loginErr').textContent  = '';
-  get('signupErr').textContent = '';
+/* ── DASHBOARD ── */
+function refreshDashboard(){
+  if(!userData) return;
+  var coins = userData.coins||0;
+  g('dashCoins').textContent   = coins;
+  g('dashRupees').textContent  = '₹'+(coins/siteSettings.coinRate).toFixed(2);
+  g('dashPlayed').textContent  = userData.quizzesPlayed||0;
+  g('dashCorrect').textContent = userData.correctAnswers||0;
+  // Today's quiz count
+  var today = new Date().toDateString();
+  var cnt   = (userData.dailyQuizDate===today) ? (userData.dailyQuizCount||0) : 0;
+  g('dashTodayCount').innerHTML = cnt+' / <span id="dashDailyLimit">'+siteSettings.dailyLimit+'</span>';
+}
+
+/* ── AUTH TABS ── */
+function switchTab(t){
+  var isL=(t==='login');
+  g('tabLogin').classList.toggle('active',isL);
+  g('tabSignup').classList.toggle('active',!isL);
+  g('loginSection').style.display  = isL?'block':'none';
+  g('signupSection').style.display = isL?'none':'block';
+  g('loginErr').textContent='';
+  g('signupErr').textContent='';
+  icons();
+}
+
+/* ── EMAIL LOGIN ── */
+function emailLogin(){
+  g('loginErr').textContent='';
+  var email=g('loginEmail').value.trim();
+  var pass=g('loginPass').value;
+  if(!email||!pass){ g('loginErr').textContent='Please fill in all fields.'; return; }
+  auth.signInWithEmailAndPassword(email,pass)
+    .catch(function(e){ g('loginErr').textContent=fe(e.code); });
+}
+
+/* ── EMAIL SIGNUP ── */
+function emailSignup(){
+  g('signupErr').textContent='';
+  var name=g('signupName').value.trim();
+  var email=g('signupEmail').value.trim();
+  var pass=g('signupPass').value;
+  if(!name||!email||!pass){ g('signupErr').textContent='Please fill in all fields.'; return; }
+  if(pass.length<6){ g('signupErr').textContent='Password must be at least 6 characters.'; return; }
+  auth.createUserWithEmailAndPassword(email,pass)
+    .then(function(c){ return c.user.updateProfile({displayName:name}); })
+    .catch(function(e){ g('signupErr').textContent=fe(e.code); });
+}
+
+/* ── GOOGLE AUTH (popup with redirect fallback) ── */
+function googleAuth(){
+  g('loginErr').textContent='';
+  g('signupErr').textContent='';
   var provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider)
-    .catch(function(e) {
-      var msg = errMsg(e.code);
-      get('loginErr').textContent  = msg;
-      get('signupErr').textContent = msg;
-    });
+  provider.addScope('profile');
+  provider.addScope('email');
+  auth.signInWithPopup(provider).catch(function(e){
+    if(e.code==='auth/popup-blocked'||e.code==='auth/popup-closed-by-user'||e.code==='auth/cancelled-popup-request'){
+      // Fallback to redirect
+      g('loginErr').textContent='Redirecting to Google sign-in...';
+      g('signupErr').textContent='Redirecting to Google sign-in...';
+      setTimeout(function(){ auth.signInWithRedirect(provider); }, 800);
+    } else {
+      var msg=fe(e.code);
+      g('loginErr').textContent=msg;
+      g('signupErr').textContent=msg;
+    }
+  });
 }
 
-/* ═══════════════════════════════════════════════
-   AUTH — LOGOUT
-═══════════════════════════════════════════════ */
-function doLogout() { auth.signOut(); }
+/* ── LOGOUT ── */
+function doLogout(){ auth.signOut(); }
 
-/* ═══════════════════════════════════════════════
-   NAVIGATION
-═══════════════════════════════════════════════ */
-function navTo(page) {
-  document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
-  document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
-  var pg  = get('page' + page.charAt(0).toUpperCase() + page.slice(1));
-  var nav = get('nav-' + page);
-  if (pg)  pg.classList.add('active');
-  if (nav) nav.classList.add('active');
-  if (page === 'quiz')     initQuiz();
-  if (page === 'withdraw') { refreshWithdrawInfo(); loadMyRequests(); }
+/* ── NAVIGATION ── */
+function navTo(page){
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
+  var pg  = g('page'+page.charAt(0).toUpperCase()+page.slice(1));
+  var nav = g('nav-'+page);
+  if(pg)  pg.classList.add('active');
+  if(nav) nav.classList.add('active');
+  if(page==='quiz')        initQuiz();
+  if(page==='leaderboard') loadLeaderboard();
+  if(page==='withdraw')    { refreshWithdrawInfo(); loadMyRequests(); }
+  icons();
 }
 
-/* ═══════════════════════════════════════════════
-   DASHBOARD
-═══════════════════════════════════════════════ */
-function refreshDashboard() {
-  if (!userData) return;
-  get('dashCoins').textContent   = userData.coins || 0;
-  get('dashRupees').textContent  = '₹' + ((userData.coins || 0) / 50).toFixed(2);
-  get('dashPlayed').textContent  = userData.quizzesPlayed || 0;
-  get('dashCorrect').textContent = userData.correctAnswers || 0;
-}
-
-/* ═══════════════════════════════════════════════
-   QUIZ DATA
-═══════════════════════════════════════════════ */
-var QUESTIONS = [
-  { q:"What is the capital of India?",               opts:["Mumbai","New Delhi","Kolkata","Chennai"],                                        ans:1, coins:5  },
-  { q:"What is 1 + 1?",                              opts:["1","2","3","4"],                                                                  ans:1, coins:2  },
-  { q:"The Sun is a ___.",                           opts:["Planet","Moon","Star","Comet"],                                                  ans:2, coins:5  },
-  { q:"How many states are there in India?",         opts:["25","28","30","32"],                                                             ans:1, coins:8  },
-  { q:"HTML stands for?",                            opts:["Hyper Text Markup Language","High Text ML","Hyper Transfer ML","None"],         ans:0, coins:5  },
-  { q:"Chemical formula of water?",                  opts:["CO2","H2O","O2","NaCl"],                                                         ans:1, coins:5  },
-  { q:"How many balls in a cricket over?",           opts:["4","5","6","7"],                                                                  ans:2, coins:3  },
-  { q:"CPU stands for?",                             opts:["Central Processing Unit","Computer Personal Unit","Core Process Unit","None"], ans:0, coins:5  },
-  { q:"Mount Everest is located in?",                opts:["India","China","Nepal","Tibet"],                                                 ans:2, coins:8  },
-  { q:"Mahatma Gandhi's full name?",                 opts:["Mohan Gandhi","Mohandas Karamchand Gandhi","Mahatma Karamchand Gandhi","None"], ans:1, coins:5  },
-  { q:"Approximate speed of light?",                 opts:["3 lakh km/s","1 lakh km/s","5 lakh km/s","2 lakh km/s"],                        ans:0, coins:8  },
-  { q:"Android was developed by?",                   opts:["Apple","Microsoft","Google","Samsung"],                                          ans:2, coins:5  },
-  { q:"How many bytes in 1 KB?",                     opts:["512","1000","1024","2048"],                                                      ans:2, coins:8  },
-  { q:"Taj Mahal is located in?",                    opts:["Delhi","Agra","Jaipur","Lucknow"],                                              ans:1, coins:3  },
-  { q:"National animal of India?",                   opts:["Lion","Elephant","Tiger","Peacock"],                                             ans:2, coins:5  },
-  { q:"Who invented the telephone?",                 opts:["Edison","Bell","Tesla","Marconi"],                                               ans:1, coins:5  },
-  { q:"How many continents are there?",              opts:["5","6","7","8"],                                                                  ans:2, coins:3  },
-  { q:"Which planet is closest to the Sun?",         opts:["Venus","Earth","Mercury","Mars"],                                                ans:2, coins:8  },
-  { q:"What does RAM stand for?",                    opts:["Random Access Memory","Read Access Memory","Run Access Memory","None"],         ans:0, coins:5  },
-  { q:"Which country has the largest population?",   opts:["USA","India","China","Russia"],                                                  ans:1, coins:5  }
+/* ══════════════════ QUIZ ══════════════════ */
+var QUESTIONS=[
+  {q:"Capital of India?",                opts:["Mumbai","New Delhi","Kolkata","Chennai"],                                 ans:1,coins:5},
+  {q:"1 + 1 = ?",                        opts:["1","2","3","4"],                                                          ans:1,coins:2},
+  {q:"The Sun is a ___.",                opts:["Planet","Moon","Star","Comet"],                                           ans:2,coins:5},
+  {q:"How many states in India?",        opts:["25","28","30","32"],                                                      ans:1,coins:8},
+  {q:"HTML stands for?",                 opts:["Hyper Text Markup Language","High Text ML","Hyper Transfer ML","None"],  ans:0,coins:5},
+  {q:"Chemical formula of water?",       opts:["CO2","H2O","O2","NaCl"],                                                 ans:1,coins:5},
+  {q:"Balls in a cricket over?",         opts:["4","5","6","7"],                                                          ans:2,coins:3},
+  {q:"CPU stands for?",                  opts:["Central Processing Unit","Computer Personal Unit","Core Process Unit","None"],ans:0,coins:5},
+  {q:"Mount Everest is in?",             opts:["India","China","Nepal","Tibet"],                                          ans:2,coins:8},
+  {q:"Mahatma Gandhi's full name?",      opts:["Mohan Gandhi","Mohandas Karamchand Gandhi","Mahatma Karamchand","None"], ans:1,coins:5},
+  {q:"Speed of light (approx)?",         opts:["3 lakh km/s","1 lakh km/s","5 lakh km/s","2 lakh km/s"],                ans:0,coins:8},
+  {q:"Android developed by?",            opts:["Apple","Microsoft","Google","Samsung"],                                   ans:2,coins:5},
+  {q:"Bytes in 1 KB?",                   opts:["512","1000","1024","2048"],                                               ans:2,coins:8},
+  {q:"Taj Mahal is in?",                 opts:["Delhi","Agra","Jaipur","Lucknow"],                                       ans:1,coins:3},
+  {q:"National animal of India?",        opts:["Lion","Elephant","Tiger","Peacock"],                                      ans:2,coins:5},
+  {q:"Who invented the telephone?",      opts:["Edison","Bell","Tesla","Marconi"],                                        ans:1,coins:5},
+  {q:"How many continents?",             opts:["5","6","7","8"],                                                          ans:2,coins:3},
+  {q:"Planet closest to the Sun?",       opts:["Venus","Earth","Mercury","Mars"],                                         ans:2,coins:8},
+  {q:"RAM stands for?",                  opts:["Random Access Memory","Read Access Memory","Run Access Memory","None"],  ans:0,coins:5},
+  {q:"Most populated country?",          opts:["USA","India","China","Russia"],                                           ans:1,coins:5}
 ];
 
-/* ═══════════════════════════════════════════════
-   QUIZ LOGIC
-═══════════════════════════════════════════════ */
-function initQuiz() {
-  var shuffled = QUESTIONS.slice().sort(function() { return Math.random() - 0.5; }).slice(0, 10);
-  quizState = { questions: shuffled, current: 0, earned: 0, answered: false };
+function getTodayCount(){
+  if(!userData) return 0;
+  var today = new Date().toDateString();
+  return (userData.dailyQuizDate===today) ? (userData.dailyQuizCount||0) : 0;
+}
+
+function initQuiz(){
+  var area=g('quizArea');
+  var today=new Date().toDateString();
+  var cnt=getTodayCount();
+  if(cnt>=siteSettings.dailyLimit){
+    area.innerHTML='<div class="limit-banner"><i data-lucide="alert-circle" style="width:24px;height:24px;margin-bottom:10px;display:block;margin-left:auto;margin-right:auto;"></i><strong>Daily Limit Reached</strong><p style="margin-top:6px;font-size:.82rem;opacity:.8;">You have played '+cnt+'/'+siteSettings.dailyLimit+' quizzes today. Come back tomorrow!</p></div>';
+    icons();
+    return;
+  }
+  var shuffled=QUESTIONS.slice().sort(function(){return Math.random()-.5;}).slice(0,10);
+  quizState={questions:shuffled,current:0,earned:0,answered:false};
   renderQuestion();
 }
 
-function renderQuestion() {
-  var area = get('quizArea');
-  var q    = quizState.questions[quizState.current];
-  var cur  = quizState.current;
-  var tot  = quizState.questions.length;
-
-  if (cur >= tot) { renderComplete(); return; }
-
-  var pct     = Math.round((cur / tot) * 100);
-  var isLast  = (cur + 1 >= tot);
-  var optsHtml = '';
-  for (var i = 0; i < q.opts.length; i++) {
-    optsHtml += '<button class="opt-btn" id="opt' + i + '" onclick="pickAnswer(' + i + ')">' + String.fromCharCode(65 + i) + '. ' + q.opts[i] + '</button>';
+function renderQuestion(){
+  var area=g('quizArea');
+  var cur=quizState.current;
+  var tot=quizState.questions.length;
+  if(cur>=tot){ renderComplete(); return; }
+  var q=quizState.questions[cur];
+  var pct=Math.round((cur/tot)*100);
+  var opts='';
+  for(var i=0;i<q.opts.length;i++){
+    opts+='<button class="opt-btn" id="opt'+i+'" onclick="pickAnswer('+i+')"><span class="opt-letter">'+String.fromCharCode(65+i)+'</span>'+q.opts[i]+'</button>';
   }
-
-  area.innerHTML =
-    '<div class="quiz-header">' +
-      '<div>' +
-        '<div class="quiz-progress">Question ' + (cur + 1) + ' of ' + tot + '</div>' +
-        '<div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%"></div></div>' +
-      '</div>' +
-      '<div style="font-size:.8rem;color:var(--gold);">🪙 +' + q.coins + '</div>' +
-    '</div>' +
-    '<div class="question-card fade-up">' +
-      '<div class="question-num">Q' + (cur + 1) + '</div>' +
-      '<div class="question-text">' + q.q + '</div>' +
-      '<div class="options-list">' + optsHtml + '</div>' +
-    '</div>' +
-    '<div id="feedbackBox"></div>' +
-    '<div id="nextBox" style="margin-top:12px;"></div>';
-
-  quizState.answered = false;
+  area.innerHTML=
+    '<div class="quiz-header">'+
+      '<div style="flex:1;">'+
+        '<div style="font-size:.78rem;color:var(--muted);">Question '+(cur+1)+' of '+tot+'</div>'+
+        '<div class="progress-bar"><div class="progress-fill" style="width:'+pct+'%"></div></div>'+
+      '</div>'+
+      '<div class="chip chip-gold" style="margin-left:12px;flex-shrink:0;">+'+q.coins+' coins</div>'+
+    '</div>'+
+    '<div class="question-card fade-up">'+
+      '<div class="q-num">Question '+(cur+1)+'</div>'+
+      '<div class="q-text">'+q.q+'</div>'+
+      '<div class="opts">'+opts+'</div>'+
+    '</div>'+
+    '<div id="feedbackBox"></div>'+
+    '<div id="nextBox" style="margin-top:10px;"></div>';
+  quizState.answered=false;
+  icons();
 }
 
-function pickAnswer(idx) {
-  if (quizState.answered) return;
-  quizState.answered = true;
-  var q       = quizState.questions[quizState.current];
-  var correct = (idx === q.ans);
-
-  for (var i = 0; i < q.opts.length; i++) {
-    var btn = get('opt' + i);
-    btn.disabled = true;
-    if (i === q.ans)   btn.classList.add('correct');
-    else if (i === idx) btn.classList.add('wrong');
+function pickAnswer(idx){
+  if(quizState.answered) return;
+  quizState.answered=true;
+  var q=quizState.questions[quizState.current];
+  var ok=(idx===q.ans);
+  for(var i=0;i<q.opts.length;i++){
+    var b=g('opt'+i);
+    b.disabled=true;
+    if(i===q.ans) b.classList.add('correct');
+    else if(i===idx) b.classList.add('wrong');
   }
-
-  var fb = get('feedbackBox');
-  if (correct) {
-    quizState.earned += q.coins;
-    fb.innerHTML = '<div class="result-box ok">✅ Correct! +' + q.coins + ' coins earned!</div>';
-    userRef.transaction(function(u) {
-      if (u) { u.coins = (u.coins || 0) + q.coins; u.correctAnswers = (u.correctAnswers || 0) + 1; }
-      return u;
-    });
+  var fb=g('feedbackBox');
+  if(ok){
+    quizState.earned+=q.coins;
+    fb.innerHTML='<div class="result-box ok"><i data-lucide="check-circle" style="width:18px;height:18px;flex-shrink:0;"></i><span>Correct! +'+q.coins+' coins earned!</span></div>';
+    userRef.transaction(function(u){ if(u){ u.coins=(u.coins||0)+q.coins; u.correctAnswers=(u.correctAnswers||0)+1; } return u; });
   } else {
-    fb.innerHTML = '<div class="result-box bad">❌ Wrong! Correct answer: ' + q.opts[q.ans] + '</div>';
+    fb.innerHTML='<div class="result-box bad"><i data-lucide="x-circle" style="width:18px;height:18px;flex-shrink:0;"></i><span>Wrong! Correct answer: <strong>'+q.opts[q.ans]+'</strong></span></div>';
   }
-  userRef.transaction(function(u) {
-    if (u) u.quizzesPlayed = (u.quizzesPlayed || 0) + 1;
+  // Update daily count
+  var today=new Date().toDateString();
+  userRef.transaction(function(u){
+    if(!u) return u;
+    u.quizzesPlayed=(u.quizzesPlayed||0)+1;
+    if(u.dailyQuizDate===today){ u.dailyQuizCount=(u.dailyQuizCount||0)+1; }
+    else { u.dailyQuizDate=today; u.dailyQuizCount=1; }
     return u;
   });
-
-  var isLast = (quizState.current + 1 >= quizState.questions.length);
-  get('nextBox').innerHTML = '<button class="next-btn" onclick="nextQ()">' + (isLast ? '🏆 See Results' : 'Next Question ➡️') + '</button>';
+  var isLast=(quizState.current+1>=quizState.questions.length);
+  g('nextBox').innerHTML='<button class="next-btn" onclick="nextQ()"><i data-lucide="'+(isLast?'trophy':'arrow-right')+'" style="width:16px;height:16px;"></i>'+(isLast?'See Results':'Next Question')+'</button>';
+  icons();
 }
 
-function nextQ() {
-  quizState.current++;
-  renderQuestion();
-}
+function nextQ(){ quizState.current++; renderQuestion(); }
 
-function renderComplete() {
-  get('quizArea').innerHTML =
-    '<div class="quiz-complete fade-up">' +
-      '<div style="font-size:3rem;margin-bottom:12px;">🏆</div>' +
-      '<h2 style="font-size:1.3rem;margin-bottom:8px;">Quiz Complete!</h2>' +
-      '<p style="color:var(--muted);font-size:.9rem;">You earned this round:</p>' +
-      '<div class="earned-tag">🪙 ' + quizState.earned + ' Coins</div>' +
-      '<p style="color:var(--muted);font-size:.85rem;margin-bottom:20px;">Keep playing to earn more!</p>' +
-      '<button class="btn btn-gold" onclick="initQuiz()">🔄 Play Again</button>' +
-      '<button class="btn btn-outline" onclick="navTo(\'dashboard\')">🏠 Dashboard</button>' +
+function renderComplete(){
+  g('quizArea').innerHTML=
+    '<div class="quiz-complete fade-up">'+
+      '<div class="complete-icon"><i data-lucide="trophy" style="width:28px;height:28px;"></i></div>'+
+      '<h2 style="font-size:1.2rem;margin-bottom:6px;">Quiz Complete!</h2>'+
+      '<p style="color:var(--muted);font-size:.85rem;">You earned this round:</p>'+
+      '<div class="earned-tag"><i data-lucide="coins" style="width:18px;height:18px;"></i>'+quizState.earned+' Coins</div>'+
+      '<p style="color:var(--muted);font-size:.82rem;margin-bottom:18px;">Played today: '+(getTodayCount())+'/'+siteSettings.dailyLimit+'</p>'+
+      '<button class="btn btn-gold" onclick="initQuiz()" style="margin-bottom:10px;"><i data-lucide="refresh-cw" style="width:15px;height:15px;"></i> Play Again</button>'+
+      '<button class="btn btn-outline" onclick="navTo(\'dashboard\')"><i data-lucide="layout-dashboard" style="width:15px;height:15px;"></i> Dashboard</button>'+
     '</div>';
+  icons();
 }
 
-/* ═══════════════════════════════════════════════
-   WITHDRAW
-═══════════════════════════════════════════════ */
-function refreshWithdrawInfo() {
-  if (!userData) return;
-  var coins = userData.coins || 0;
-  get('wdCoins').textContent  = coins;
-  get('wdRupees').textContent = '₹' + (coins / 50).toFixed(2);
-}
-
-function sendWithdraw() {
-  get('wdOk').textContent  = '';
-  get('wdErr').textContent = '';
-  var upi   = get('upiInput').value.trim();
-  var coins = parseInt(get('coinsInput').value) || 0;
-  if (!upi)          { get('wdErr').textContent = 'Please enter your UPI ID.'; return; }
-  if (coins < 500)   { get('wdErr').textContent = 'Minimum 500 coins required.'; return; }
-  if (coins % 50)    { get('wdErr').textContent = 'Coins must be in multiples of 50.'; return; }
-  if (coins > (userData.coins || 0)) { get('wdErr').textContent = 'You do not have enough coins.'; return; }
-  var rupees = (coins / 50).toFixed(2);
-  db.ref('quizcash_withdrawals').push({
-    uid: currentUID, name: userData.name, email: userData.email,
-    upi: upi, coins: coins, rupees: rupees, status: 'pending', createdAt: Date.now()
-  }).then(function() {
-    get('wdOk').textContent = '✅ Request sent! ₹' + rupees + ' for ' + coins + ' coins.';
-    get('upiInput').value  = '';
-    get('coinsInput').value = '';
-    loadMyRequests();
-  }).catch(function() {
-    get('wdErr').textContent = 'Failed to send request. Try again.';
+/* ══════════════════ LEADERBOARD ══════════════════ */
+function loadLeaderboard(){
+  var cont=g('lbList');
+  cont.innerHTML='<div class="empty-state"><div class="empty-icon"><i data-lucide="loader" style="width:20px;height:20px;"></i></div><p>Loading...</p></div>';
+  db.ref('quizcash_users').orderByChild('coins').limitToLast(20).once('value').then(function(snap){
+    var list=[];
+    snap.forEach(function(s){ list.push(Object.assign({id:s.key},s.val())); });
+    list.sort(function(a,b){ return (b.coins||0)-(a.coins||0); });
+    if(!list.length){ cont.innerHTML='<div class="empty-state"><div class="empty-icon"><i data-lucide="users" style="width:20px;height:20px;"></i></div><p>No players yet.</p></div>'; icons(); return; }
+    var rankClasses=['r1','r2','r3'];
+    var html='';
+    list.forEach(function(u,i){
+      var isMe=(u.id===uid);
+      var rc=rankClasses[i]||'rn';
+      var name=(u.name||'Anonymous');
+      var initials=name.split(' ').map(function(w){return w[0];}).join('').toUpperCase().slice(0,2);
+      html+='<div class="lb-item'+(isMe?' lb-me':'')+'">'+
+        '<div class="lb-rank '+rc+'">'+(i+1)+'</div>'+
+        '<div style="width:34px;height:34px;background:var(--card2);border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:Syne,sans-serif;font-weight:700;font-size:.8rem;flex-shrink:0;">'+(initials||'?')+'</div>'+
+        '<div class="lb-info">'+
+          '<div class="lb-name">'+(isMe?'<strong>You</strong>':name)+'</div>'+
+          '<div class="lb-sub">'+(u.quizzesPlayed||0)+' quizzes played</div>'+
+        '</div>'+
+        '<div class="lb-coins"><i data-lucide="coins" style="width:13px;height:13px;display:inline;"></i> '+(u.coins||0)+'</div>'+
+      '</div>';
+    });
+    cont.innerHTML=html;
+    icons();
   });
 }
 
-function loadMyRequests() {
-  var cont = get('myRequests');
-  cont.innerHTML = '<div class="empty-state">Loading...</div>';
-  db.ref('quizcash_withdrawals').orderByChild('uid').equalTo(currentUID).once('value')
-    .then(function(snap) {
-      var items = [];
-      snap.forEach(function(s) { items.unshift(Object.assign({ id: s.key }, s.val())); });
-      if (!items.length) { cont.innerHTML = '<div class="empty-state">No requests yet.</div>'; return; }
-      var html = '';
-      items.forEach(function(r) {
-        var isDone  = r.status === 'done';
-        var date    = new Date(r.createdAt).toLocaleDateString('en-IN');
-        var badge   = isDone
-          ? '<span class="status-badge badge-done">✅ Done</span>'
-          : '<span class="status-badge badge-pending">⏳ Pending</span>';
-        html += '<div class="req-item">' +
-          '<div style="display:flex;justify-content:space-between;margin-bottom:6px;">' +
-            '<span style="font-size:.85rem;">📱 ' + r.upi + '</span>' +
-            '<span style="color:var(--green);font-weight:700;font-family:Syne,sans-serif;">₹' + r.rupees + '</span>' +
-          '</div>' +
-          '<div style="display:flex;justify-content:space-between;">' +
-            '<span style="font-size:.75rem;color:var(--muted);">' + date + '</span>' +
-            badge +
-          '</div>' +
-        '</div>';
-      });
-      cont.innerHTML = html;
-    })
-    .catch(function() { cont.innerHTML = '<div class="empty-state">Failed to load requests.</div>'; });
+/* ══════════════════ WITHDRAW ══════════════════ */
+function refreshWithdrawInfo(){
+  if(!userData) return;
+  var coins=userData.coins||0;
+  g('wdCoins').textContent=coins;
+  g('wdRupees').textContent='₹'+(coins/siteSettings.coinRate).toFixed(2);
+  g('wdMinChip').textContent=siteSettings.minWithdraw+' Coins';
+}
+
+function sendWithdraw(){
+  g('wdOk').textContent='';
+  g('wdErr').textContent='';
+  var upi=g('upiInput').value.trim();
+  var coins=parseInt(g('coinsInput').value)||0;
+  var min=siteSettings.minWithdraw;
+  if(!upi){ g('wdErr').textContent='Please enter your UPI ID.'; return; }
+  if(coins<min){ g('wdErr').textContent='Minimum '+min+' coins required.'; return; }
+  if(coins%50){ g('wdErr').textContent='Coins must be in multiples of 50.'; return; }
+  if(coins>(userData.coins||0)){ g('wdErr').textContent='You do not have enough coins.'; return; }
+  var rupees=(coins/siteSettings.coinRate).toFixed(2);
+  db.ref('quizcash_withdrawals').push({
+    uid:uid, name:userData.name, email:userData.email,
+    upi:upi, coins:coins, rupees:rupees, status:'pending', createdAt:Date.now()
+  }).then(function(){
+    g('wdOk').textContent='Request sent! ₹'+rupees+' for '+coins+' coins.';
+    g('upiInput').value=''; g('coinsInput').value='';
+    loadMyRequests();
+  }).catch(function(){ g('wdErr').textContent='Failed to send request. Try again.'; });
+}
+
+function loadMyRequests(){
+  var cont=g('myRequests');
+  cont.innerHTML='<div class="empty-state"><div class="empty-icon"><i data-lucide="loader" style="width:20px;height:20px;"></i></div><p>Loading...</p></div>';
+  db.ref('quizcash_withdrawals').orderByChild('uid').equalTo(uid).once('value').then(function(snap){
+    var items=[];
+    snap.forEach(function(s){ items.unshift(Object.assign({id:s.key},s.val())); });
+    if(!items.length){
+      cont.innerHTML='<div class="empty-state"><div class="empty-icon"><i data-lucide="inbox" style="width:20px;height:20px;"></i></div><p>No requests yet.</p></div>';
+      icons(); return;
+    }
+    var html='';
+    items.forEach(function(r){
+      var sc=r.status==='done'?'s-done':r.status==='rejected'?'s-rejected':'s-pending';
+      var st=r.status==='done'?'Paid':r.status==='rejected'?'Rejected':'Pending';
+      html+='<div class="req-item">'+
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'+
+          '<span style="font-size:.84rem;font-weight:500;">'+r.upi+'</span>'+
+          '<span style="font-family:Syne,sans-serif;font-weight:700;color:var(--green);">₹'+r.rupees+'</span>'+
+        '</div>'+
+        '<div style="display:flex;justify-content:space-between;align-items:center;">'+
+          '<span style="font-size:.74rem;color:var(--muted);">'+new Date(r.createdAt).toLocaleDateString('en-IN')+'</span>'+
+          '<span class="status-chip '+sc+'">'+st+'</span>'+
+        '</div>'+
+      '</div>';
+    });
+    cont.innerHTML=html;
+    icons();
+  });
+}
+
+/* ══════════════════ PROFILE ══════════════════ */
+function refreshProfile(){
+  if(!userData) return;
+  var name=(userData.name||'User');
+  var initials=name.split(' ').map(function(w){return w[0];}).join('').toUpperCase().slice(0,2)||'?';
+  g('avatarInitial').textContent=initials;
+  g('profileName').textContent=name;
+  g('profileEmail').textContent=userData.email||'—';
+  g('pCoins').textContent=userData.coins||0;
+  g('pPlayed').textContent=userData.quizzesPlayed||0;
+  g('pCorrect').textContent=userData.correctAnswers||0;
+  g('pRupees').textContent='₹'+((userData.coins||0)/siteSettings.coinRate).toFixed(2);
+  g('pJoined').textContent=userData.createdAt?new Date(userData.createdAt).toLocaleDateString('en-IN'):'—';
+  var prov=userData.provider||'email';
+  g('pProvider').textContent=prov==='google.com'?'Google':'Email';
 }
 </script>
 </body>
