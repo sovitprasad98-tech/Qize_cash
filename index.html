@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>QuizCash – Earn by Answering!</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#0d0f14;--card:#161921;--card2:#1e222d;--gold:#f5c842;--gold2:#ffb700;--green:#2dde98;--red:#ff5c5c;--blue:#5b9cf6;--text:#e8eaf0;--muted:#7a8099;--border:#272b38;--radius:16px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+h1,h2,h3{font-family:'Syne',sans-serif;}
+
+/* LOADER */
+#loader{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:12px;}
+.spin{width:42px;height:42px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* Both screens hidden by default - JS controls display */
+#authScreen{display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;min-height:100vh;}
+#appScreen{display:none;flex-direction:column;min-height:100vh;}
+
+/* AUTH */
+.auth-logo{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--gold);letter-spacing:-1px;margin-bottom:4px;}
+.auth-sub{color:var(--muted);font-size:.85rem;margin-bottom:32px;}
+.auth-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px 24px;width:100%;max-width:380px;}
+.tab-row{display:flex;margin-bottom:24px;background:var(--bg);border-radius:10px;padding:4px;}
+.tab-btn{flex:1;padding:10px;border:none;background:transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:.9rem;font-weight:600;border-radius:8px;cursor:pointer;transition:.2s;}
+.tab-btn.active{background:var(--gold);color:#000;}
+label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:6px;font-weight:500;}
+input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-size:.95rem;outline:none;transition:.2s;font-family:'DM Sans',sans-serif;}
+input:focus{border-color:var(--gold);}
+.form-group{margin-bottom:16px;}
+.btn{width:100%;padding:14px;border:none;border-radius:10px;font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;transition:.15s;letter-spacing:.3px;}
+.btn-gold{background:var(--gold);color:#000;}
+.btn-gold:hover{background:var(--gold2);}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text);margin-top:10px;}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold);}
+.btn-google{background:#fff;color:#1a1a1a;display:flex;align-items:center;justify-content:center;gap:10px;border:1px solid #e0e0e0;font-family:'Syne',sans-serif;font-weight:700;font-size:.92rem;}
+.btn-google:hover{background:#f5f5f5;}
+.divider{display:flex;align-items:center;gap:10px;margin:14px 0;color:var(--muted);font-size:.76rem;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.msg-err{color:var(--red);font-size:.82rem;margin-top:10px;text-align:center;min-height:18px;}
+.msg-ok{color:var(--green);font-size:.82rem;margin-top:10px;text-align:center;}
+
+/* APP SHELL */
+.topbar{background:var(--card);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.topbar-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:var(--gold);}
+.topbar-user{font-size:.8rem;color:var(--muted);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.logout-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:8px;font-size:.8rem;cursor:pointer;font-family:'Syne',sans-serif;font-weight:600;white-space:nowrap;}
+.logout-btn:hover{border-color:var(--red);color:var(--red);}
+.content{flex:1;padding:20px;max-width:480px;width:100%;margin:0 auto;padding-bottom:90px;}
+.bottom-nav{background:var(--card);border-top:1px solid var(--border);display:flex;position:fixed;bottom:0;left:0;right:0;z-index:100;}
+.nav-item{flex:1;padding:12px 4px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;transition:.2s;border:none;background:transparent;color:var(--muted);font-size:.7rem;font-family:'DM Sans',sans-serif;}
+.nav-item.active{color:var(--gold);}
+.nav-icon{font-size:1.3rem;}
+.page{display:none;}
+.page.active{display:block;}
+
+/* DASHBOARD */
+.balance-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
+.bal-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px 16px;text-align:center;}
+.bal-card.gold-card{border-color:var(--gold);background:linear-gradient(135deg,#1e1a0a,#1e222d);}
+.bal-card.green-card{border-color:var(--green);background:linear-gradient(135deg,#0a1e16,#1e222d);}
+.bal-icon{font-size:1.6rem;margin-bottom:6px;}
+.bal-val{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;}
+.bal-val.gold{color:var(--gold);}
+.bal-val.green{color:var(--green);}
+.bal-label{font-size:.75rem;color:var(--muted);margin-top:2px;}
+.info-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;}
+.info-card p{font-size:.85rem;color:var(--muted);line-height:1.7;}
+.info-card strong{color:var(--gold);}
+.section-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:14px;color:var(--text);}
+
+/* QUIZ */
+.quiz-header{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
+.quiz-progress{font-size:.8rem;color:var(--muted);}
+.progress-bar{height:4px;background:var(--border);border-radius:4px;margin-top:8px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--gold);border-radius:4px;transition:.3s;}
+.question-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px;}
+.question-num{font-size:.75rem;color:var(--gold);font-weight:700;margin-bottom:8px;letter-spacing:1px;text-transform:uppercase;}
+.question-text{font-family:'Syne',sans-serif;font-size:1rem;font-weight:600;line-height:1.5;margin-bottom:20px;}
+.options-list{display:flex;flex-direction:column;gap:10px;}
+.opt-btn{width:100%;padding:14px 16px;background:var(--card2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:.9rem;text-align:left;cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif;}
+.opt-btn:hover:not([disabled]){border-color:var(--gold);color:var(--gold);}
+.opt-btn.correct{background:#0a2e1e;border-color:var(--green);color:var(--green);}
+.opt-btn.wrong{background:#2e0a0a;border-color:var(--red);color:var(--red);}
+.result-box{border-radius:12px;padding:14px 16px;margin-bottom:12px;text-align:center;font-size:.9rem;border:1px solid;}
+.result-box.ok{border-color:var(--green);color:var(--green);background:#0a2e1e33;}
+.result-box.bad{border-color:var(--red);color:var(--red);background:#2e0a0a33;}
+.next-btn{width:100%;padding:14px;background:var(--gold);border:none;border-radius:10px;color:#000;font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;}
+.quiz-complete{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:32px 20px;text-align:center;}
+.earned-tag{display:inline-block;background:linear-gradient(135deg,#1e1a0a,#2a2000);border:1px solid var(--gold);border-radius:20px;padding:8px 20px;color:var(--gold);font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;margin:12px 0 20px;}
+
+/* WITHDRAW */
+.withdraw-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px;}
+.conv-info{background:var(--bg);border-radius:10px;padding:12px;margin-bottom:16px;font-size:.82rem;color:var(--muted);line-height:1.9;}
+.conv-info span{color:var(--gold);font-weight:600;}
+.req-item{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;}
+.status-badge{font-size:.72rem;padding:3px 10px;border-radius:20px;font-weight:600;}
+.badge-pending{background:#2a1e00;color:var(--gold);border:1px solid var(--gold);}
+.badge-done{background:#0a2e1e;color:var(--green);border:1px solid var(--green);}
+.empty-state{text-align:center;color:var(--muted);font-size:.85rem;padding:32px 0;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.fade-up{animation:fadeUp .3s ease forwards;}
+</style>
+</head>
+<body>
+
+<div id="loader">
+  <div class="spin"></div>
+  <span style="color:var(--muted);font-size:.85rem;font-family:'Syne',sans-serif;margin-top:4px;">Loading...</span>
+</div>
+
+<!-- AUTH SCREEN -->
+<div id="authScreen">
+  <div class="auth-logo">🪙 QuizCash</div>
+  <div class="auth-sub">Play quizzes and earn real money!</div>
+  <div class="auth-card fade-up">
+    <div class="tab-row">
+      <button class="tab-btn active" id="tabLogin"  onclick="switchTab('login')">Login</button>
+      <button class="tab-btn"        id="tabSignup" onclick="switchTab('signup')">Sign Up</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div id="loginSection">
+      <button class="btn btn-google" onclick="googleSignIn()">
+        <svg width="20" height="20" viewBox="0 0 48 48" style="flex-shrink:0"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        Continue with Google
+      </button>
+      <div class="divider">or login with email</div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="loginEmail" placeholder="your@email.com"/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPass" placeholder="Your password"/>
+      </div>
+      <button class="btn btn-gold" onclick="emailLogin()">Login</button>
+      <div id="loginErr" class="msg-err"></div>
+    </div>
+
+    <!-- SIGNUP FORM -->
+    <div id="signupSection" style="display:none;">
+      <button class="btn btn-google" onclick="googleSignIn()">
+        <svg width="20" height="20" viewBox="0 0 48 48" style="flex-shrink:0"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        Sign up with Google
+      </button>
+      <div class="divider">or sign up with email</div>
+      <div class="form-group">
+        <label>Your Name</label>
+        <input type="text" id="signupName" placeholder="Full name"/>
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="signupEmail" placeholder="your@email.com"/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="signupPass" placeholder="Minimum 6 characters"/>
+      </div>
+      <button class="btn btn-gold" onclick="emailSignup()">Create Account</button>
+      <div id="signupErr" class="msg-err"></div>
+    </div>
+  </div>
+</div>
+
+<!-- APP SCREEN -->
+<div id="appScreen">
+  <div class="topbar">
+    <div class="topbar-logo">🪙 QuizCash</div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span class="topbar-user" id="topbarName"></span>
+      <button class="logout-btn" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="page active" id="pageDashboard">
+      <div class="section-title">👋 Welcome back!</div>
+      <div class="balance-grid">
+        <div class="bal-card gold-card">
+          <div class="bal-icon">🪙</div>
+          <div class="bal-val gold" id="dashCoins">0</div>
+          <div class="bal-label">Coins</div>
+        </div>
+        <div class="bal-card green-card">
+          <div class="bal-icon">💰</div>
+          <div class="bal-val green" id="dashRupees">₹0.00</div>
+          <div class="bal-label">Rupees</div>
+        </div>
+      </div>
+      <div class="info-card">
+        <p>🎯 <strong>50 Coins = ₹1</strong></p>
+        <p style="margin-top:6px;">Answer quiz questions correctly to earn coins! Minimum <strong>500 coins (₹10)</strong> to withdraw.</p>
+      </div>
+      <div class="info-card">
+        <p>📊 <strong>Quizzes Played:</strong> <span id="dashPlayed" style="color:var(--blue);">0</span></p>
+        <p style="margin-top:6px;">✅ <strong>Correct Answers:</strong> <span id="dashCorrect" style="color:var(--green);">0</span></p>
+      </div>
+      <button class="btn btn-gold" style="margin-top:8px;" onclick="navTo('quiz')">🚀 Start Quiz</button>
+    </div>
+
+    <div class="page" id="pageQuiz">
+      <div id="quizArea"></div>
+    </div>
+
+    <div class="page" id="pageWithdraw">
+      <div class="withdraw-card">
+        <h3 style="margin-bottom:16px;font-size:1rem;font-family:'Syne',sans-serif;">💸 Withdraw Request</h3>
+        <div class="conv-info">
+          Your Balance: <span id="wdCoins">0</span> Coins = <span id="wdRupees">₹0.00</span><br/>
+          Rate: <span>50 Coins = ₹1</span><br/>
+          Minimum Withdrawal: <span>500 Coins (₹10)</span>
+        </div>
+        <div class="form-group">
+          <label>Your UPI ID</label>
+          <input type="text" id="upiInput" placeholder="yourname@upi"/>
+        </div>
+        <div class="form-group">
+          <label>Coins to Withdraw (multiples of 50)</label>
+          <input type="number" id="coinsInput" placeholder="e.g. 500" min="500" step="50"/>
+        </div>
+        <button class="btn btn-gold" onclick="sendWithdraw()">Send Request</button>
+        <div id="wdOk" class="msg-ok"></div>
+        <div id="wdErr" class="msg-err"></div>
+      </div>
+      <div class="section-title">📋 My Requests</div>
+      <div id="myRequests"><div class="empty-state">No requests yet.</div></div>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nav-item active" id="nav-dashboard" onclick="navTo('dashboard')">
+      <span class="nav-icon">🏠</span><span>Home</span>
+    </button>
+    <button class="nav-item" id="nav-quiz" onclick="navTo('quiz')">
+      <span class="nav-icon">🧠</span><span>Quiz</span>
+    </button>
+    <button class="nav-item" id="nav-withdraw" onclick="navTo('withdraw')">
+      <span class="nav-icon">💸</span><span>Withdraw</span>
+    </button>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script>
+/* ═══════════════════════════════════════════════
+   FIREBASE INIT
+═══════════════════════════════════════════════ */
+firebase.initializeApp({
+  apiKey:            "AIzaSyBnz1UbLyz0f6t83D2222XlmKNhKLdFzQM",
+  authDomain:        "digit-product.firebaseapp.com",
+  databaseURL:       "https://digit-product-default-rtdb.firebaseio.com",
+  projectId:         "digit-product",
+  storageBucket:     "digit-product.firebasestorage.app",
+  messagingSenderId: "866989324771",
+  appId:             "1:866989324771:web:922bcc61814ab6cd6d88d6"
+});
+const auth = firebase.auth();
+const db   = firebase.database();
+
+/* ═══════════════════════════════════════════════
+   GLOBALS
+═══════════════════════════════════════════════ */
+let currentUID = null;
+let userData   = null;
+let userRef    = null;
+let quizState  = {};
+
+/* ═══════════════════════════════════════════════
+   UTILITY
+═══════════════════════════════════════════════ */
+const get = id => document.getElementById(id);
+
+function showScreen(which) {
+  get('authScreen').style.display = 'none';
+  get('appScreen').style.display  = 'none';
+  if (which === 'auth') get('authScreen').style.display = 'flex';
+  if (which === 'app')  get('appScreen').style.display  = 'flex';
+}
+
+const ERR = {
+  'auth/user-not-found'        : 'No account found with this email.',
+  'auth/wrong-password'        : 'Wrong password.',
+  'auth/invalid-credential'    : 'Invalid email or password.',
+  'auth/email-already-in-use'  : 'This email is already registered.',
+  'auth/weak-password'         : 'Password must be at least 6 characters.',
+  'auth/invalid-email'         : 'Please enter a valid email address.',
+  'auth/too-many-requests'     : 'Too many attempts. Try again later.',
+  'auth/popup-closed-by-user'  : 'Google sign-in was cancelled.',
+  'auth/popup-blocked'         : 'Popup blocked! Please allow popups for this site.',
+  'auth/network-request-failed': 'Network error. Check your internet connection.'
+};
+function errMsg(code) { return ERR[code] || 'Something went wrong. Please try again.'; }
+
+/* ═══════════════════════════════════════════════
+   AUTH STATE — SINGLE SOURCE OF TRUTH
+═══════════════════════════════════════════════ */
+auth.onAuthStateChanged(async function(user) {
+  get('loader').style.display = 'none';
+
+  if (user) {
+    currentUID = user.uid;
+    userRef    = db.ref('quizcash_users/' + user.uid);
+
+    // Create profile if first time
+    const snap = await userRef.once('value');
+    if (!snap.exists()) {
+      await userRef.set({
+        name:           user.displayName || user.email.split('@')[0],
+        email:          user.email || '',
+        coins:          0,
+        quizzesPlayed:  0,
+        correctAnswers: 0,
+        createdAt:      Date.now(),
+        provider:       (user.providerData[0] && user.providerData[0].providerId) || 'email'
+      });
+    }
+
+    // Real-time listener
+    userRef.on('value', function(s) {
+      userData = s.val() || {};
+      refreshDashboard();
+      refreshWithdrawInfo();
+    });
+
+    get('topbarName').textContent = user.displayName || user.email;
+    showScreen('app');
+    navTo('dashboard');
+
+  } else {
+    if (userRef) { userRef.off(); userRef = null; }
+    currentUID = null;
+    userData   = null;
+    showScreen('auth');
+  }
+});
+
+/* ═══════════════════════════════════════════════
+   AUTH — TAB SWITCH
+═══════════════════════════════════════════════ */
+function switchTab(tab) {
+  var isLogin = (tab === 'login');
+  get('tabLogin').classList.toggle('active', isLogin);
+  get('tabSignup').classList.toggle('active', !isLogin);
+  get('loginSection').style.display  = isLogin ? 'block' : 'none';
+  get('signupSection').style.display = isLogin ? 'none'  : 'block';
+  get('loginErr').textContent  = '';
+  get('signupErr').textContent = '';
+}
+
+/* ═══════════════════════════════════════════════
+   AUTH — EMAIL LOGIN
+═══════════════════════════════════════════════ */
+function emailLogin() {
+  get('loginErr').textContent = '';
+  var email = get('loginEmail').value.trim();
+  var pass  = get('loginPass').value;
+  if (!email || !pass) { get('loginErr').textContent = 'Please fill in all fields.'; return; }
+  auth.signInWithEmailAndPassword(email, pass)
+    .catch(function(e) { get('loginErr').textContent = errMsg(e.code); });
+}
+
+/* ═══════════════════════════════════════════════
+   AUTH — EMAIL SIGNUP
+═══════════════════════════════════════════════ */
+function emailSignup() {
+  get('signupErr').textContent = '';
+  var name  = get('signupName').value.trim();
+  var email = get('signupEmail').value.trim();
+  var pass  = get('signupPass').value;
+  if (!name || !email || !pass) { get('signupErr').textContent = 'Please fill in all fields.'; return; }
+  if (pass.length < 6)          { get('signupErr').textContent = 'Password must be at least 6 characters.'; return; }
+  auth.createUserWithEmailAndPassword(email, pass)
+    .then(function(cred) { return cred.user.updateProfile({ displayName: name }); })
+    .catch(function(e)   { get('signupErr').textContent = errMsg(e.code); });
+}
+
+/* ═══════════════════════════════════════════════
+   AUTH — GOOGLE SIGN IN
+═══════════════════════════════════════════════ */
+function googleSignIn() {
+  get('loginErr').textContent  = '';
+  get('signupErr').textContent = '';
+  var provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider)
+    .catch(function(e) {
+      var msg = errMsg(e.code);
+      get('loginErr').textContent  = msg;
+      get('signupErr').textContent = msg;
+    });
+}
+
+/* ═══════════════════════════════════════════════
+   AUTH — LOGOUT
+═══════════════════════════════════════════════ */
+function doLogout() { auth.signOut(); }
+
+/* ═══════════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════════ */
+function navTo(page) {
+  document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+  var pg  = get('page' + page.charAt(0).toUpperCase() + page.slice(1));
+  var nav = get('nav-' + page);
+  if (pg)  pg.classList.add('active');
+  if (nav) nav.classList.add('active');
+  if (page === 'quiz')     initQuiz();
+  if (page === 'withdraw') { refreshWithdrawInfo(); loadMyRequests(); }
+}
+
+/* ═══════════════════════════════════════════════
+   DASHBOARD
+═══════════════════════════════════════════════ */
+function refreshDashboard() {
+  if (!userData) return;
+  get('dashCoins').textContent   = userData.coins || 0;
+  get('dashRupees').textContent  = '₹' + ((userData.coins || 0) / 50).toFixed(2);
+  get('dashPlayed').textContent  = userData.quizzesPlayed || 0;
+  get('dashCorrect').textContent = userData.correctAnswers || 0;
+}
+
+/* ═══════════════════════════════════════════════
+   QUIZ DATA
+═══════════════════════════════════════════════ */
+var QUESTIONS = [
+  { q:"What is the capital of India?",               opts:["Mumbai","New Delhi","Kolkata","Chennai"],                                        ans:1, coins:5  },
+  { q:"What is 1 + 1?",                              opts:["1","2","3","4"],                                                                  ans:1, coins:2  },
+  { q:"The Sun is a ___.",                           opts:["Planet","Moon","Star","Comet"],                                                  ans:2, coins:5  },
+  { q:"How many states are there in India?",         opts:["25","28","30","32"],                                                             ans:1, coins:8  },
+  { q:"HTML stands for?",                            opts:["Hyper Text Markup Language","High Text ML","Hyper Transfer ML","None"],         ans:0, coins:5  },
+  { q:"Chemical formula of water?",                  opts:["CO2","H2O","O2","NaCl"],                                                         ans:1, coins:5  },
+  { q:"How many balls in a cricket over?",           opts:["4","5","6","7"],                                                                  ans:2, coins:3  },
+  { q:"CPU stands for?",                             opts:["Central Processing Unit","Computer Personal Unit","Core Process Unit","None"], ans:0, coins:5  },
+  { q:"Mount Everest is located in?",                opts:["India","China","Nepal","Tibet"],                                                 ans:2, coins:8  },
+  { q:"Mahatma Gandhi's full name?",                 opts:["Mohan Gandhi","Mohandas Karamchand Gandhi","Mahatma Karamchand Gandhi","None"], ans:1, coins:5  },
+  { q:"Approximate speed of light?",                 opts:["3 lakh km/s","1 lakh km/s","5 lakh km/s","2 lakh km/s"],                        ans:0, coins:8  },
+  { q:"Android was developed by?",                   opts:["Apple","Microsoft","Google","Samsung"],                                          ans:2, coins:5  },
+  { q:"How many bytes in 1 KB?",                     opts:["512","1000","1024","2048"],                                                      ans:2, coins:8  },
+  { q:"Taj Mahal is located in?",                    opts:["Delhi","Agra","Jaipur","Lucknow"],                                              ans:1, coins:3  },
+  { q:"National animal of India?",                   opts:["Lion","Elephant","Tiger","Peacock"],                                             ans:2, coins:5  },
+  { q:"Who invented the telephone?",                 opts:["Edison","Bell","Tesla","Marconi"],                                               ans:1, coins:5  },
+  { q:"How many continents are there?",              opts:["5","6","7","8"],                                                                  ans:2, coins:3  },
+  { q:"Which planet is closest to the Sun?",         opts:["Venus","Earth","Mercury","Mars"],                                                ans:2, coins:8  },
+  { q:"What does RAM stand for?",                    opts:["Random Access Memory","Read Access Memory","Run Access Memory","None"],         ans:0, coins:5  },
+  { q:"Which country has the largest population?",   opts:["USA","India","China","Russia"],                                                  ans:1, coins:5  }
+];
+
+/* ═══════════════════════════════════════════════
+   QUIZ LOGIC
+═══════════════════════════════════════════════ */
+function initQuiz() {
+  var shuffled = QUESTIONS.slice().sort(function() { return Math.random() - 0.5; }).slice(0, 10);
+  quizState = { questions: shuffled, current: 0, earned: 0, answered: false };
+  renderQuestion();
+}
+
+function renderQuestion() {
+  var area = get('quizArea');
+  var q    = quizState.questions[quizState.current];
+  var cur  = quizState.current;
+  var tot  = quizState.questions.length;
+
+  if (cur >= tot) { renderComplete(); return; }
+
+  var pct     = Math.round((cur / tot) * 100);
+  var isLast  = (cur + 1 >= tot);
+  var optsHtml = '';
+  for (var i = 0; i < q.opts.length; i++) {
+    optsHtml += '<button class="opt-btn" id="opt' + i + '" onclick="pickAnswer(' + i + ')">' + String.fromCharCode(65 + i) + '. ' + q.opts[i] + '</button>';
+  }
+
+  area.innerHTML =
+    '<div class="quiz-header">' +
+      '<div>' +
+        '<div class="quiz-progress">Question ' + (cur + 1) + ' of ' + tot + '</div>' +
+        '<div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%"></div></div>' +
+      '</div>' +
+      '<div style="font-size:.8rem;color:var(--gold);">🪙 +' + q.coins + '</div>' +
+    '</div>' +
+    '<div class="question-card fade-up">' +
+      '<div class="question-num">Q' + (cur + 1) + '</div>' +
+      '<div class="question-text">' + q.q + '</div>' +
+      '<div class="options-list">' + optsHtml + '</div>' +
+    '</div>' +
+    '<div id="feedbackBox"></div>' +
+    '<div id="nextBox" style="margin-top:12px;"></div>';
+
+  quizState.answered = false;
+}
+
+function pickAnswer(idx) {
+  if (quizState.answered) return;
+  quizState.answered = true;
+  var q       = quizState.questions[quizState.current];
+  var correct = (idx === q.ans);
+
+  for (var i = 0; i < q.opts.length; i++) {
+    var btn = get('opt' + i);
+    btn.disabled = true;
+    if (i === q.ans)   btn.classList.add('correct');
+    else if (i === idx) btn.classList.add('wrong');
+  }
+
+  var fb = get('feedbackBox');
+  if (correct) {
+    quizState.earned += q.coins;
+    fb.innerHTML = '<div class="result-box ok">✅ Correct! +' + q.coins + ' coins earned!</div>';
+    userRef.transaction(function(u) {
+      if (u) { u.coins = (u.coins || 0) + q.coins; u.correctAnswers = (u.correctAnswers || 0) + 1; }
+      return u;
+    });
+  } else {
+    fb.innerHTML = '<div class="result-box bad">❌ Wrong! Correct answer: ' + q.opts[q.ans] + '</div>';
+  }
+  userRef.transaction(function(u) {
+    if (u) u.quizzesPlayed = (u.quizzesPlayed || 0) + 1;
+    return u;
+  });
+
+  var isLast = (quizState.current + 1 >= quizState.questions.length);
+  get('nextBox').innerHTML = '<button class="next-btn" onclick="nextQ()">' + (isLast ? '🏆 See Results' : 'Next Question ➡️') + '</button>';
+}
+
+function nextQ() {
+  quizState.current++;
+  renderQuestion();
+}
+
+function renderComplete() {
+  get('quizArea').innerHTML =
+    '<div class="quiz-complete fade-up">' +
+      '<div style="font-size:3rem;margin-bottom:12px;">🏆</div>' +
+      '<h2 style="font-size:1.3rem;margin-bottom:8px;">Quiz Complete!</h2>' +
+      '<p style="color:var(--muted);font-size:.9rem;">You earned this round:</p>' +
+      '<div class="earned-tag">🪙 ' + quizState.earned + ' Coins</div>' +
+      '<p style="color:var(--muted);font-size:.85rem;margin-bottom:20px;">Keep playing to earn more!</p>' +
+      '<button class="btn btn-gold" onclick="initQuiz()">🔄 Play Again</button>' +
+      '<button class="btn btn-outline" onclick="navTo(\'dashboard\')">🏠 Dashboard</button>' +
+    '</div>';
+}
+
+/* ═══════════════════════════════════════════════
+   WITHDRAW
+═══════════════════════════════════════════════ */
+function refreshWithdrawInfo() {
+  if (!userData) return;
+  var coins = userData.coins || 0;
+  get('wdCoins').textContent  = coins;
+  get('wdRupees').textContent = '₹' + (coins / 50).toFixed(2);
+}
+
+function sendWithdraw() {
+  get('wdOk').textContent  = '';
+  get('wdErr').textContent = '';
+  var upi   = get('upiInput').value.trim();
+  var coins = parseInt(get('coinsInput').value) || 0;
+  if (!upi)          { get('wdErr').textContent = 'Please enter your UPI ID.'; return; }
+  if (coins < 500)   { get('wdErr').textContent = 'Minimum 500 coins required.'; return; }
+  if (coins % 50)    { get('wdErr').textContent = 'Coins must be in multiples of 50.'; return; }
+  if (coins > (userData.coins || 0)) { get('wdErr').textContent = 'You do not have enough coins.'; return; }
+  var rupees = (coins / 50).toFixed(2);
+  db.ref('quizcash_withdrawals').push({
+    uid: currentUID, name: userData.name, email: userData.email,
+    upi: upi, coins: coins, rupees: rupees, status: 'pending', createdAt: Date.now()
+  }).then(function() {
+    get('wdOk').textContent = '✅ Request sent! ₹' + rupees + ' for ' + coins + ' coins.';
+    get('upiInput').value  = '';
+    get('coinsInput').value = '';
+    loadMyRequests();
+  }).catch(function() {
+    get('wdErr').textContent = 'Failed to send request. Try again.';
+  });
+}
+
+function loadMyRequests() {
+  var cont = get('myRequests');
+  cont.innerHTML = '<div class="empty-state">Loading...</div>';
+  db.ref('quizcash_withdrawals').orderByChild('uid').equalTo(currentUID).once('value')
+    .then(function(snap) {
+      var items = [];
+      snap.forEach(function(s) { items.unshift(Object.assign({ id: s.key }, s.val())); });
+      if (!items.length) { cont.innerHTML = '<div class="empty-state">No requests yet.</div>'; return; }
+      var html = '';
+      items.forEach(function(r) {
+        var isDone  = r.status === 'done';
+        var date    = new Date(r.createdAt).toLocaleDateString('en-IN');
+        var badge   = isDone
+          ? '<span class="status-badge badge-done">✅ Done</span>'
+          : '<span class="status-badge badge-pending">⏳ Pending</span>';
+        html += '<div class="req-item">' +
+          '<div style="display:flex;justify-content:space-between;margin-bottom:6px;">' +
+            '<span style="font-size:.85rem;">📱 ' + r.upi + '</span>' +
+            '<span style="color:var(--green);font-weight:700;font-family:Syne,sans-serif;">₹' + r.rupees + '</span>' +
+          '</div>' +
+          '<div style="display:flex;justify-content:space-between;">' +
+            '<span style="font-size:.75rem;color:var(--muted);">' + date + '</span>' +
+            badge +
+          '</div>' +
+        '</div>';
+      });
+      cont.innerHTML = html;
+    })
+    .catch(function() { cont.innerHTML = '<div class="empty-state">Failed to load requests.</div>'; });
+}
+</script>
+</body>
+</html>
